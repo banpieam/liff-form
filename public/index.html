@@ -6,15 +6,29 @@
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
     async function main() {
-      await liff.init({ liffId: "2007830171-P7b3veqm" });
-      if (!liff.isLoggedIn()) {
-        liff.login();
-      } else {
-        const profile = await liff.getProfile();
-        const userId = profile.userId;
-        const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSfp15FY492z_zaFAbPP0Wz4YPs_ivmGLCTGBeQPI4LixAqdDQ/viewform";
-        const prefilled = `${formURL}?usp=pp_url&entry.861531766=${encodeURIComponent(userId)}`;
-        window.location.href = prefilled;
+      try {
+        console.log("Starting LIFF init...");
+        await liff.init({ liffId: "2007830171-P7b3veqm" });
+        console.log("LIFF init complete");
+
+        if (!liff.isLoggedIn()) {
+          console.log("Not logged in, redirecting to login...");
+          liff.login();
+        } else {
+          console.log("Logged in, getting profile...");
+          const profile = await liff.getProfile();
+          console.log("Profile received:", profile);
+          
+          const userId = profile.userId;
+          const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSfp15FY492z_zaFAbPP0Wz4YPs_ivmGLCTGBeQPI4LixAqdDQ/viewform";
+          const prefilled = `${formURL}?usp=pp_url&entry.861531766=${encodeURIComponent(userId)}`;
+          console.log("Redirecting to form:", prefilled);
+          
+          window.location.href = prefilled;
+        }
+      } catch (error) {
+        console.error("Error during LIFF process:", error);
+        document.body.innerHTML = `<p style="color:red;">เกิดข้อผิดพลาด: ${error.message}</p>`;
       }
     }
     main();

@@ -6,7 +6,7 @@
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
     async function main() {
-      await liff.init({ liffId: "2007830171-qwOg5wKL" });
+      await liff.init({ liffId: "2007830171-P7b3veqm" });
       if (!liff.isLoggedIn()) {
         liff.login();
       } else {

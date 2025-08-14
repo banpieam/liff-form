@@ -6,32 +6,33 @@
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
     async function main() {
-      // ตรวจว่าเปิดจาก LINE App หรือไม่
-      if (!navigator.userAgent.includes("Line")) {
-        document.body.innerHTML = "<p style='color:red;'>กรุณาเปิดลิงก์นี้จากใน LINE App เท่านั้น</p>";
-        return;
-      }
-
       try {
-        // เริ่มต้น LIFF
+        console.log("🚀 Starting LIFF init...");
         await liff.init({ liffId: "2007830171-P7b3veqm" });
+        console.log("✅ LIFF init complete");
 
         if (!liff.isLoggedIn()) {
-          liff.login();
-        } else {
-          // ดึงข้อมูลโปรไฟล์ผู้ใช้
-          const profile = await liff.getProfile();
-          const userId = profile.userId;
-
-          // ลิงก์ฟอร์ม Google Form และ entry ID ของช่อง userId
-          const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSfp15FY492z_zaFAbPP0Wz4YPs_ivmGLCTGBeQPI4LixAqdDQ/viewform";
-          const prefilled = `${formURL}?usp=pp_url&entry.861531766=${encodeURIComponent(userId)}`;
-
-          // เปลี่ยนหน้าไปที่ฟอร์ม
-          window.location.href = prefilled;
+          console.log("⚠️ Not logged in, redirecting to login...");
+          liff.login({ redirectUri: window.location.href });
+          return;
         }
+
+        console.log("🔑 Getting ID Token...");
+        const idToken = liff.getDecodedIDToken();
+        console.log("Decoded ID Token:", idToken);
+
+        const userId = idToken.sub;
+        console.log("👤 User ID:", userId);
+
+        // สร้างลิงก์ Google Form พร้อม Prefill
+        const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSfp15FY492z_zaFAbPP0Wz4YPs_ivmGLCTGBeQPI4LixAqdDQ/viewform";
+        const prefilled = `${formURL}?usp=pp_url&entry.861531766=${encodeURIComponent(userId)}`;
+
+        console.log("📄 Redirecting to form:", prefilled);
+        window.location.href = prefilled;
+
       } catch (error) {
-        console.error("LIFF Error:", error);
+        console.error("❌ Error during LIFF process:", error);
         document.body.innerHTML = `<p style="color:red;">เกิดข้อผิดพลาด: ${error.message}</p>`;
       }
     }

@@ -18,17 +18,23 @@ async function main() {
     }
 
     console.log("🔍 ดึง decoded ID token");
-    const idToken = liff.getDecodedIDToken();
+    let idToken = liff.getDecodedIDToken();
     console.log("📄 ID Token:", idToken);
 
-    const userId = idToken ? idToken.sub : "NO_USER_ID";
+    if (!idToken) {
+      console.warn("⚠️ ไม่มี ID Token → ลอง reload");
+      window.location.reload();
+      return;
+    }
+
+    const userId = idToken.sub;
     console.log("👤 User ID:", userId);
 
     const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSfp15FY492z_zaFAbPP0Wz4YPs_ivmGLCTGBeQPI4LixAqdDQ/viewform";
     const prefilled = `${formURL}?usp=pp_url&entry.861531766=${encodeURIComponent(userId)}`;
     console.log("➡️ Redirect ไป:", prefilled);
 
-    window.location.href = prefilled;
+    window.location.replace(prefilled);
   } catch (error) {
     console.error("❌ เกิดข้อผิดพลาด:", error);
     document.body.innerHTML = `<p style="color:red;">เกิดข้อผิดพลาด: ${error.message}</p>`;
